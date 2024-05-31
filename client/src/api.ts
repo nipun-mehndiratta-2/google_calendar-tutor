@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000';
+const API_URL = process.env.SERVER_URL;
 
 const getToken = () => {
     const token = localStorage.getItem('token');
