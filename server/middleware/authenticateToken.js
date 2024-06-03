@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const authenticateToken = (req, res, next) => {
   let token = req.headers.authorization;
   if (token) {
-    token = token.split(" ")[1]; // Split by space and get the second part
+    token = token.split(" ")[1]; 
   }
   if (!token) {
     return res.status(401).json({ message: 'Unauthorized' });

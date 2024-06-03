@@ -14,13 +14,11 @@ router.post('/', authenticateToken, async (req, res) => {
     // console.log(req.body)
     const userEmail = req.userData.userEmail
     const data = await createGoogleCalendarEvent(userEmail, req.body);
-    if(data?.id){
-      let event = new Event({...req.body, user: userEmail, eventId:data.id });
-      await event.save();
-      return res.status(201).send(event);
-    }
-      return res.status(400).send("failed");
-
+    const eventid = data?.id ? data?.id : null;
+    let event = new Event({...req.body, user: userEmail, eventId:eventid });
+    await event.save();
+    return res.status(201).send(event);
+    
   } catch (error) {
     console.log(error)
     res.status(400).send(error);
@@ -31,19 +29,20 @@ router.post('/', authenticateToken, async (req, res) => {
 router.patch('/:id', authenticateToken, async (req, res) => {
   try {
     const event = await Event.findOneAndUpdate(
-      { _id: req.body._id, user: req.userData.userEmail },
+      { _id: req.params.id, user: req.userData.userEmail },
       req.body,
       { new: true, runValidators: true }
     );
     if (!event) {
       return res.status(404).send();
     }
+    if(event.eventId){
+      const updateInGoogle = await updateGoogleCalendarEvent(req.userData.userEmail, event.eventId, req.body);
+  }
 
-    await updateGoogleCalendarEvent(req.userData.userEmail, req.params.id, req.body);
-
-    res.status(200).send(event);
+    return res.status(200).send(event);
   } catch (error) {
-    res.status(400).send(error);
+    return res.status(400).send(error);
   }
 });
 
@@ -51,23 +50,24 @@ router.patch('/:id', authenticateToken, async (req, res) => {
 router.get('/', authenticateToken, async (req, res) => {
   try {
     const events = await Event.find({ user: req.userData.userEmail });
-    res.status(200).send(events);
+    return res.status(200).send(events);
   } catch (error) {
-    res.status(500).send(error);
+    console.log(error);
+    return res.status(500).send(error);
   }
 });
 
 // Delete an event by ID
 router.delete('/:id', authenticateToken, async (req, res) => {
   try {
-    console.log(req.userData.userId)
-    const event = await Event.findOneAndDelete({ eventId: req.params.id, user: req.userData.userEmail });
+    const event = await Event.findOneAndDelete({ _id: req.params.id, user: req.userData.userEmail },{returnDocument:true});
     // if (!event) {
     //   return res.status(404).send();
     // }
-    const resFromGoogle = await deleteGoogleCalendarEvent(req.userData.userEmail, req.params.id);
-
-    res.status(200).send(resFromGoogle);
+    if(event.eventId){
+    const resFromGoogle = await deleteGoogleCalendarEvent(req.userData.userEmail, event.eventId);
+    }
+    res.status(200).send(event);
   } catch (error) {
     res.status(500).send(error);
   }

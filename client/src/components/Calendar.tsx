@@ -1,32 +1,22 @@
-import { useState, useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from "@fullcalendar/interaction";
 
-import { fetchEvents } from '../api';
 
-const Calendar = ({ onEventClick }) => {
-  const [events, setEvents] = useState([]);
+const Calendar = ({ onEventClick, events }) => {
 
-  useEffect(() => {
-    const getEvents = async () => {
-      const response = await fetchEvents();
-      setEvents(response.data);
-    };
-    getEvents();
-  }, []);
 
   const handleDateClick = (arg) => {
     onEventClick({ event: { extendedProps: { date: arg.dateStr } } });
   };
-
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
+    <div className="relative z-0 flex flex-col min-w-0 p-3 break-words bg-white border-0 shadow-xl rounded-2xl bg-clip-border">
       <h2 className="text-lg font-semibold mb-4">Calendar</h2>
       <FullCalendar
         plugins={[dayGridPlugin,interactionPlugin]}
         initialView="dayGridMonth"
         events={events}
+        eventClassNames={"bg-cyan-400 border-0 p-1"}
         eventClick={onEventClick}
         dateClick={handleDateClick}
       />

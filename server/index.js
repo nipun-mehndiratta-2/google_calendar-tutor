@@ -62,6 +62,7 @@ app.get('/auth/google', (req, res) => {
 });
 
 const User = require('./models/User');
+const { handleEventsIntegration } = require("./common");
 
 app.get('/oauth2callback', async (req, res) => {
   const { code } = req.query;
@@ -83,7 +84,7 @@ app.get('/oauth2callback', async (req, res) => {
       { googleTokens: tokens },
       { new: true, upsert: true }
     );
-
+    await handleEventsIntegration(userEmail);
     res.status(200).send('Authentication successful! You can close this tab.');
   } catch (error) {
     console.error('Error retrieving access token', error);

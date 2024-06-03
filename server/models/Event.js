@@ -10,7 +10,7 @@ const eventSchema = new mongoose.Schema({
   duration: { type: Number, required: true },
   sessionNotes: { type: String, required: true },
   user: { type: String, required: true },
-  eventId: { type: String, required: true },
+  eventId: { type: String },
 });
 
 const Event = mongoose.model('Event', eventSchema);

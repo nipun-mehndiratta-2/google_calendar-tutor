@@ -46,7 +46,7 @@ const EventForm = ({ event, onClose, onSave }) => {
         await createEvent(formData);
         toast.success('Event created successfully!');
       } else {
-        await updateEvent(formData.eventId, formData);
+        await updateEvent(formData._id, formData);
         toast.success('Event updated successfully!');
       }
       onSave();
@@ -59,7 +59,7 @@ const EventForm = ({ event, onClose, onSave }) => {
   const handleDeleteEvent = async (e) => {
     e.preventDefault();
     try {
-      await deleteEvent(formData.eventId);
+      await deleteEvent(formData._id);
       toast.success('Event deleted successfully!');
       onSave();
     } catch (error) {
@@ -176,7 +176,7 @@ const EventForm = ({ event, onClose, onSave }) => {
           <button
             type="button"
             onClick={onClose}
-            className="bg-gray-300 text-gray-700 py-2 px-4 rounded-lg shadow-md hover:bg-cyan-600 transition duration-300"
+            className="bg-gray-300 text-gray-700 py-2 px-4 rounded-lg shadow-md hover:bg-red-300 transition duration-300"
           >
             Cancel
           </button>
